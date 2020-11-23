@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 
+	"github.com/martinyonathann/bookstore_users-api/utils/date_utils"
 	"github.com/martinyonathann/bookstore_users-api/utils/errors"
 )
 
@@ -10,12 +11,13 @@ var (
 	usersDB = make(map[int64]*User)
 )
 
+//Get for get users
 func (user *User) Get() *errors.RestErr {
-	result := usersDB[user.Id]
+	result := usersDB[user.ID]
 	if result == nil {
-		return errors.NewNotFoundError(fmt.Sprintf("user %d not found", user.Id))
+		return errors.NewNotFoundError(fmt.Sprintf("user %d not found", user.ID))
 	}
-	user.Id = result.Id
+	user.ID = result.ID
 	user.FirstName = result.FirstName
 	user.LastName = result.LastName
 	user.Email = result.Email
@@ -23,14 +25,18 @@ func (user *User) Get() *errors.RestErr {
 	return nil
 }
 
+//Save for save users
 func (user *User) Save() *errors.RestErr {
-	current := usersDB[user.Id]
+	current := usersDB[user.ID]
 	if current != nil {
 		if current.Email == user.Email {
 			return errors.NewBadRequestError(fmt.Sprintf("email %s already registered", user.Email))
 		}
-		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.Id))
+		return errors.NewBadRequestError(fmt.Sprintf("user %d already exists", user.ID))
 	}
-	usersDB[user.Id] = user
+
+	user.DateCreated = date_utils.GetNowString()
+
+	usersDB[user.ID] = user
 	return nil
 }

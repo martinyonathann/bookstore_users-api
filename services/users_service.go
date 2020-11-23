@@ -1,13 +1,14 @@
 package services
 
 import (
+
 	"github.com/martinyonathann/bookstore_users-api/domain/users"
 	"github.com/martinyonathann/bookstore_users-api/utils/errors"
 )
 
 //GetUser function for getUser
 func GetUser(userId int64) (*users.User, *errors.RestErr) {
-	result := &users.User{Id: userId}
+	result := &users.User{ID: userId}
 	if err := result.Get(); err != nil {
 		return nil, err
 	}
