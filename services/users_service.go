@@ -1,7 +1,6 @@
 package services
 
 import (
-
 	"github.com/martinyonathann/bookstore_users-api/domain/users"
 	"github.com/martinyonathann/bookstore_users-api/utils/errors"
 )
