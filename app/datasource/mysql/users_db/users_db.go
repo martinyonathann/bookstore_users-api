@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -18,10 +17,6 @@ const (
 
 var (
 	Client   *sql.DB
-	user     = os.Getenv(mysql_users_username)
-	password = os.Getenv(mysql_users_password)
-	host     = os.Getenv(mysql_users_host)
-	schema   = os.Getenv(mysql_users_schema)
 )
 
 func init() {
