@@ -20,6 +20,7 @@ type User struct {
 	Status      string `json:"status"`
 	Password    string `json:"password"`
 }
+type Users []User
 
 //Validate for validate email
 func (user *User) Validate() *errors.RestErr {
