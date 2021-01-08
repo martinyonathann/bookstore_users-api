@@ -87,6 +87,7 @@ func (user *User) Delete() *errors.RestErr {
 	}
 	return nil
 }
+
 //FindByStatus for find users
 func (user *User) FindByStatus(status string) ([]User, *errors.RestErr) {
 	stmt, err := users_db.Client.Prepare(queryFindbyStatus)
@@ -116,5 +117,6 @@ func (user *User) FindByStatus(status string) ([]User, *errors.RestErr) {
 		logger.Error("error when count len of Result", nil)
 		return nil, errors.NewNotFoundError(fmt.Sprintf("no users matching status %s", status))
 	}
+	logger.Info("succes")
 	return result, nil
 }

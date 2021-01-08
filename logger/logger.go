@@ -29,9 +29,6 @@ func init() {
 	}
 }
 
-// func GetLogger() {
-// 	return log
-// }
 
 func Info(msg string, tags ...zap.Field) {
 	log.Info(msg, tags...)

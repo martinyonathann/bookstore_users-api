@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	Client   *sql.DB
+	Client *sql.DB
 )
 
 func init() {
