@@ -2,6 +2,7 @@ package users
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/martinyonathann/bookstore_users-api/datasource/mysql/users_db"
 	"github.com/martinyonathann/bookstore_users-api/logger"
@@ -37,6 +38,7 @@ func (user *User) Get() *errors.RestErr {
 //Save for save users
 func (user *User) Save() *errors.RestErr {
 	stmt, err := users_db.Client.Prepare(queryInsertUser)
+	log.Println(user)
 	if err != nil {
 		logger.Error("error when trying to prepare Save user statement", err)
 		return errors.NewInternalServerError("database error")

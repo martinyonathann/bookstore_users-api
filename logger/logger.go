@@ -17,7 +17,7 @@ func init() {
 		EncoderConfig: zapcore.EncoderConfig{
 			LevelKey:     "level",
 			TimeKey:      "time",
-			MessageKey:   "msg",
+			MessageKey:   "type",
 			EncodeTime:   zapcore.ISO8601TimeEncoder,
 			EncodeLevel:  zapcore.LowercaseLevelEncoder,
 			EncodeCaller: zapcore.ShortCallerEncoder,
@@ -28,7 +28,14 @@ func init() {
 		panic(err)
 	}
 }
-
+func RequestLog(msg string, tags ...zap.Field) {
+	log.Info(msg, tags...)
+	log.Sync()
+}
+func ResponseLog(msg string, tags ...zap.Field) {
+	log.Info(msg, tags...)
+	log.Sync()
+}
 
 func Info(msg string, tags ...zap.Field) {
 	log.Info(msg, tags...)
