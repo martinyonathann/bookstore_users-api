@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/martinyonathann/bookstore_users-api/services"
 	"github.com/martinyonathann/bookstore_users-api/utils/curl"
+	"github.com/martinyonathann/bookstore_users-api/utils/errors"
 )
 
 const (
@@ -10,15 +14,20 @@ const (
 )
 
 func CreateItem(c *gin.Context) {
+	_, idErr := services.UsersService.GetUser(c.GetInt64("user_id"))
+	if idErr != nil {
+		c.JSON(http.StatusOK, errors.NewInternalServerError(idErr.Error))
+		return
+	}
 
-	// reqBody, _ := (ioutil.ReadAll(c.Request.Body))
-	// json.Unmarshal([]byte(reqBody), &itemsDomain)
+	itemsDomain, err := curl.RequestToGateway(c.Request.Method, urlCreateItem, c.Request.Body)
 
-	// logger.RequestLog("Request", zap.Any("data_request", itemsDomain))
-
-	itemsDomain, _ := curl.RequestToGateway(c.Request.Method, urlCreateItem, c.Request.Body)
-
-	c.JSON(200, itemsDomain)
+	if err != nil {
+		c.JSON(http.StatusOK, err)
+		return
+	}
+	c.JSON(http.StatusOK, itemsDomain)
+	return
 
 	// logger.RequestLog("Request to "+url, zap.Any("data_request", itemsDomain))
 }

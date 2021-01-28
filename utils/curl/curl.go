@@ -17,6 +17,9 @@ func RequestToGateway(methodReq, url string, reqBody io.ReadCloser) (*items.Item
 	var errorsCreate errors.RestErr
 	var itemsDomain items.Item
 
+	// bodyRequest, _ := (ioutil.ReadAll(reqBody))
+	// json.Unmarshal([]byte(bodyRequest), &itemsDomain)
+
 	client := &http.Client{}
 	req, err := http.NewRequest(methodReq, url, reqBody)
 	if err != nil {
@@ -24,6 +27,7 @@ func RequestToGateway(methodReq, url string, reqBody io.ReadCloser) (*items.Item
 	}
 
 	req.Header.Add("Content-Type", "application/json")
+	// logger.RequestLog("Request to "+url, zap.Any("data_request", itemsDomain))
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, errors.NewInternalServerError(err.Error())
@@ -37,13 +41,10 @@ func RequestToGateway(methodReq, url string, reqBody io.ReadCloser) (*items.Item
 
 	if errorsCreate.Status == 0 {
 		json.Unmarshal([]byte(bodyString), &itemsDomain)
-		// logger.ResponseLog("Response from "+url, zap.Any("data_response", itemsDomain))
-		logger.ResponseLog("Response", zap.Any("data_response", itemsDomain))
+		logger.ResponseLog("Response from "+url, zap.Any("data_response", itemsDomain))
 		return &itemsDomain, nil
 	}
-
-	// logger.ResponseLog("Response from "+url, zap.Any("data_response", errorsCreate))
-	logger.ResponseLog("Response", zap.Any("data_response", errorsCreate))
+	logger.ResponseLog("Response from "+url, zap.Any("data_response", errorsCreate))
 	return nil, &errorsCreate
 
 }
