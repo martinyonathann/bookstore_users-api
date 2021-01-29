@@ -14,14 +14,20 @@ const (
 )
 
 func CreateItem(c *gin.Context) {
-	_, idErr := services.UsersService.GetUser(c.GetInt64("user_id"))
-	if idErr != nil {
-		c.JSON(http.StatusOK, errors.NewInternalServerError(idErr.Error))
+	email, password, _ := c.Request.BasicAuth()
+
+	countLogin, countErr := services.UsersService.LoginUser(email, password)
+
+	if countErr != nil {
+		c.JSON(http.StatusOK, countErr.Error)
+		return
+	}
+	if countLogin < 1 {
+		c.JSON(http.StatusOK, errors.NewNotFoundError("Account Not Found"))
 		return
 	}
 
 	itemsDomain, err := curl.RequestToGateway(c.Request.Method, urlCreateItem, c.Request.Body)
-
 	if err != nil {
 		c.JSON(http.StatusOK, err)
 		return

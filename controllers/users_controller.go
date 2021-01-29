@@ -11,6 +11,12 @@ import (
 	"github.com/martinyonathann/bookstore_users-api/utils/errors"
 )
 
+type LoginUser struct {
+	Email     string `json:"email"`
+	LoginDate string `json:"date_login"`
+	Status    string `json:"status"`
+}
+
 var (
 	counter int
 )
@@ -99,12 +105,6 @@ func Search(c *gin.Context) {
 	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
-type LoginUser struct {
-	Email     string `json:"email"`
-	LoginDate string `json:"date_login"`
-	Status    string `json:"status"`
-}
-
 func Login(c *gin.Context) {
 
 	email, password, _ := c.Request.BasicAuth()
@@ -114,24 +114,16 @@ func Login(c *gin.Context) {
 	loginUser.LoginDate = date_utils.GetNowDBFormat()
 	loginUser.Status = "Active"
 
-	// if err := c.ShouldBindJSON(&user); err != nil {
-	// 	restErr := errors.NewBadRequestError("invalid json body")
-	// 	c.JSON(restErr.Status, restErr)
-	// 	return
-	// }
-	// emailReq := user.Email
-	// passwordReq := user.Password
-
 	countLogin, countErr := services.UsersService.LoginUser(email, password)
 
 	if countErr != nil {
-		c.JSON(200, countErr.Error)
+		c.JSON(http.StatusOK, countErr.Error)
 		return
 	}
 	if countLogin < 1 {
-		c.JSON(200, errors.NewNotFoundError("Account Not Found"))
+		c.JSON(http.StatusOK, errors.NewNotFoundError("Account Not Found"))
 		return
 	}
-	c.JSON(200, &loginUser)
+	c.JSON(http.StatusOK, &loginUser)
 	return
 }
