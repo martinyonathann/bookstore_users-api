@@ -19,6 +19,7 @@ type usersServiceInterface interface {
 	UpdateUser(bool, users.User) (*users.User, *errors.RestErr)
 	DeleteUser(int64) *errors.RestErr
 	SearchUser(string) (users.Users, *errors.RestErr)
+	LoginUser(string, string) (int, *errors.RestErr)
 }
 
 //GetUser function for getUser
@@ -51,10 +52,6 @@ func (s *usersService) UpdateUser(isPartial bool, user users.User) (*users.User,
 		return nil, err
 	}
 
-	// if err := user.Validate(); err != nil {
-	// 	return nil, err
-	// }
-
 	if isPartial {
 		if user.FirstName != "" {
 			current.FirstName = user.FirstName
@@ -86,4 +83,14 @@ func (s *usersService) DeleteUser(userID int64) *errors.RestErr {
 func (s *usersService) SearchUser(status string) (users.Users, *errors.RestErr) {
 	dao := &users.User{}
 	return dao.FindByStatus(status)
+}
+
+func (s *usersService) LoginUser(email, password string) (int, *errors.RestErr) {
+	password = crypto_utils.GetMd5(password)
+	count, CountErr := users.AccessLogin(email, password)
+
+	if CountErr != nil {
+		return 0, errors.NewNotFoundError(CountErr.Error)
+	}
+	return count, nil
 }

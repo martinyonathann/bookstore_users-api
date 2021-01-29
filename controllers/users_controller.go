@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/martinyonathann/bookstore_users-api/domain/users"
 	"github.com/martinyonathann/bookstore_users-api/services"
+	"github.com/martinyonathann/bookstore_users-api/utils/date_utils"
 	"github.com/martinyonathann/bookstore_users-api/utils/errors"
 )
 
@@ -96,4 +97,41 @@ func Search(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, users.Marshall(c.GetHeader("X-Public") == "true"))
+}
+
+type LoginUser struct {
+	Email     string `json:"email"`
+	LoginDate string `json:"date_login"`
+	Status    string `json:"status"`
+}
+
+func Login(c *gin.Context) {
+
+	email, password, _ := c.Request.BasicAuth()
+	var loginUser LoginUser
+
+	loginUser.Email = email
+	loginUser.LoginDate = date_utils.GetNowDBFormat()
+	loginUser.Status = "Active"
+
+	// if err := c.ShouldBindJSON(&user); err != nil {
+	// 	restErr := errors.NewBadRequestError("invalid json body")
+	// 	c.JSON(restErr.Status, restErr)
+	// 	return
+	// }
+	// emailReq := user.Email
+	// passwordReq := user.Password
+
+	countLogin, countErr := services.UsersService.LoginUser(email, password)
+
+	if countErr != nil {
+		c.JSON(200, countErr.Error)
+		return
+	}
+	if countLogin < 1 {
+		c.JSON(200, errors.NewNotFoundError("Account Not Found"))
+		return
+	}
+	c.JSON(200, &loginUser)
+	return
 }

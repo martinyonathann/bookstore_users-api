@@ -15,6 +15,7 @@ const (
 	queryUpdateUser   = "UPDATE users SET first_name = ? , last_name = ? , email = ? WHERE id = ? ;"
 	queryDeleteUser   = "DELETE FROM users WHERE id = ? ;"
 	queryFindbyStatus = "SELECT * FROM users WHERE status = ? ;"
+	queryCountLogin   = "SELECT COUNT(*) FROM users WHERE email = ? AND password = ?;"
 )
 
 //Get for get users
@@ -88,6 +89,24 @@ func (user *User) Delete() *errors.RestErr {
 		return errors.NewInternalServerError("Database error")
 	}
 	return nil
+}
+
+func AccessLogin(email, password string) (int, *errors.RestErr) {
+	stmt, err := users_db.Client.Prepare(queryCountLogin)
+	if err != nil {
+		logger.Error("error when trying to prepare Count Login statement", err)
+		return 0, errors.NewInternalServerError("Database error")
+	}
+	defer stmt.Close()
+
+	rows := stmt.QueryRow(email, password)
+
+	var count int
+	if err := rows.Scan(&count); err != nil {
+		logger.Error("error when count rows", err)
+		return 0, errors.NewInternalServerError("error when count rows")
+	}
+	return count, nil
 }
 
 //FindByStatus for find users

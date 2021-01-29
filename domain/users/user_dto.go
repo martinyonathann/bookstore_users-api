@@ -20,6 +20,15 @@ type User struct {
 	Status      string `json:"status"`
 	Password    string `json:"password"`
 }
+
+type Auth struct {
+	Rc          int64  `json:"rc"`
+	Message     string `json:"message"`
+	Detail      string `json:"detail"`
+	Ext_ref     string `json:"ext_ref"`
+	AccessToken string `json:"access_token"`
+}
+
 type Users []User
 
 //Validate for validate email
